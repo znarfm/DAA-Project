@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 
+st.set_page_config(
+    page_title="Synchllabus",
+    page_icon="🗓️",
+)
+
 # SQLite database file path
 db_file = 'synchllabus_database.db'
 
@@ -46,13 +51,13 @@ else:  # Full-Time
 # Fetch subject data
 subjects = fetch_subject_data()
 
+selected_subjects = st.multiselect("Subjects Taught*", subjects)
+
 # Mark mandatory fields
 st.markdown("**required*")
 
-selected_subjects = st.multiselect("Subjects Taught*", subjects)
-
 # Submit button
-submit_button = st.button("Submit")
+submit_button = st.button("Submit", type="primary")
 
 # If the submit button is pressed
 if submit_button:

@@ -27,7 +27,6 @@ st.write("## Instructors and Their Subjects")
 st.dataframe(df.set_index('Instructor'))  # Set 'Instructor' column as index
     
 # Function to populate class tables with instructors and subjects
-# Function to populate class tables with instructors and subjects
 def populate_class_tables():
     # Fetch all data from instructor_subject table
     query = "SELECT Instructor, Subject FROM instructor_subject"

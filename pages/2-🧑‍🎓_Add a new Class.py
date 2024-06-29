@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("DAA Project")
+# st.title("DAA Project")
 
 st.write("## Add a new class")
 

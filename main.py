@@ -1,17 +1,11 @@
 import streamlit as st
+from streamlit_gsheets import GSheetsConnection
 
-st.title("DAA Project")
+st.set_page_config(
+    page_title="Synchllabus",
+    page_icon="🗓️",
+)
 
-st.write("## Add/Edit a new instructor")
-st.text_input("Last Name")
-st.text_input("First Name")
-st.text_input("Middle Initial")
-emptype = st.selectbox("Employment Type", ("Full-Time", "Part-Time"))
+st.title("Landing Page")
 
-if emptype == "Part-Time":
-    st.multiselect("Available Days", ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
-
-st.number_input("Weekly Hours", 0, 100)
-st.multiselect("Subjects Taught", ("Math", "Science", "History"))
-
-st.button("Submit")
+st.header("Welcome!")

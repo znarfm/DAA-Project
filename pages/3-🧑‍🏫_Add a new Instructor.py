@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 
+st.set_page_config(
+    page_title="Synchllabus",
+    page_icon="🗓️",
+)
+
 # SQLite database file path
 db_file = 'synchllabus_database.db'
 

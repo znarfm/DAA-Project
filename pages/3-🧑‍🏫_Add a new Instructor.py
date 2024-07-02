@@ -69,7 +69,7 @@ def main():
                     # Insert new instructor data into the SQLite table
                     cursor = conn.cursor()
                     cursor.execute('''INSERT INTO instructor (Last_name, First_name, Middle_initial, Full_name, Work_hours_per_week, Free_time)
-                                      VALUES (?, ?, ?, ?, 40, 0)''',  # Default work hours set to 40, Free_time set to 0 by default
+                                      VALUES (?, ?, ?, ?, 40, 40)''',  # Default work hours set to 40, Free_time set to 0 by default
                                    (last_name, first_name, middle_initial, full_name))
                     
                     # Insert subjects taught into instructor_subject table

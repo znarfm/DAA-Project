@@ -17,7 +17,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS instructor (
                     Middle_initial TEXT,
                     Full_name TEXT,
                     Work_hours_per_week INTEGER DEFAULT 40,
-                    Free_time INTEGER
+                    Free_time INTEGER DEFAULT 40
                 )''')
 
 # Transfer data from the old table to the new table

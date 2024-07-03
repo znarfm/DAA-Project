@@ -23,8 +23,22 @@ query = "SELECT Instructor, Subject FROM instructor_subject"
 df = pd.read_sql(query, conn)
 
 # Display table
-st.write("## Instructors and Their Subjects")
-st.dataframe(df.set_index('Instructor'))  # Set 'Instructor' column as index
+# Layout for displaying the tables side by side
+col1, col_spacer, col2 = st.columns([1, 0.2, 1])  # Adjust the ratio to add space
+
+with col1:
+    st.write("## Instructors and Their Subjects")
+    st.dataframe(df.set_index('Instructor'))  # Set 'Instructor' column as index
+
+# Add a spacer between the columns
+with col_spacer:
+    st.empty()
+
+with col2:
+    st.write("## BSCS 2nd Year: 2nd Semester")
+    # Editable input for number of classes with constraints
+    num_classes = st.number_input("Number of Classes (Section):", min_value=1, max_value=6, step=1)
+    st.write(f"Selected number of classes: {num_classes}")
     
 # Function to populate class tables with instructors and subjects
 def populate_class_tables():

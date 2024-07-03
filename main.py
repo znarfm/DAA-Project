@@ -5,34 +5,22 @@ import pandas as pd
 st.set_page_config(
     page_title="Synchllabus",
     page_icon="🗓️",
+    layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
-# SQLite database file path
-db_file = 'synchllabus_database.db'
+conn = sqlite3.connect("synchllabus_database.db")
 
-# Establishing a SQLite connection
-conn = sqlite3.connect(db_file)
-cursor = conn.cursor()  # Define cursor at the beginning of your script
+st.title("Welcome to Synchlabbus!")
+instructor_subject_df = pd.read_sql_query("SELECT Instructor, Subject FROM instructor_subject", conn)
 
-st.title("Welcome to Synchlabbus")
-
-# Query to fetch data from the instructor_subject table
-query = "SELECT Instructor, Subject FROM instructor_subject"
-
-# Fetch data into DataFrame
-df = pd.read_sql(query, conn)
-
-# Display table
 # Layout for displaying the tables side by side
-col1, col_spacer, col2 = st.columns([1, 0.2, 1])  # Adjust the ratio to add space
+col1, col_spacer, col2 = st.columns([1, 0.1, 1])
 
 with col1:
     st.write("## Instructors and Their Subjects")
-    st.dataframe(df.set_index('Instructor'))  # Set 'Instructor' column as index
-
-# Add a spacer between the columns
-with col_spacer:
-    st.empty()
+    st.dataframe(instructor_subject_df.set_index('Instructor'), # Set 'Instructor' column as index
+                 use_container_width=True)  
 
 with col2:
     st.write("## BSCS 2nd Year: 2nd Semester")

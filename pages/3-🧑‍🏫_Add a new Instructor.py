@@ -79,7 +79,7 @@ def main():
                     
                     # Insert subjects taught into instructor_subject table
                     for subject in selected_subjects:
-                        cursor.execute('''INSERT INTO instructor_subject (Instructor, Subject, Class)
+                        cursor.execute('''INSERT INTO instructor_subject (Instructor, Subject, No_of_Classes)
                                           VALUES (?, ?, ?)''', (full_name, subject, ""))  # Class can be added later if needed
 
                     conn.commit()

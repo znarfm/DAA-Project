@@ -25,8 +25,12 @@ with col1:
 with col2:
     st.write("## BSCS 2nd Year: 2nd Semester")
     # Editable input for number of classes with constraints
-    num_classes = st.number_input("Number of Classes (Section):", min_value=1, max_value=6, step=1)
+    num_classes = st.number_input("Number of Classes (Section):", min_value=1, max_value=10, step=1)
     st.write(f"Selected number of classes: {num_classes}")
+
+    st.subheader("Section Names")
+    for i in range(1, num_classes + 1):
+        st.write(f"BSCS 2-{i}")
     
 # Function to populate class tables with instructors and subjects
 def populate_class_tables():

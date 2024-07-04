@@ -40,3 +40,79 @@
 
 #     # Commit the transaction
 #     conn.commit()
+
+
+# Function to assign instructors to classes based on subject match and free time availability
+def assign_instructors(conn, num_classes):
+    try:
+        c = conn.cursor()
+
+        # Reset No_of_classes to 0 before assigning instructors
+        reset_no_of_classes(conn)
+
+        # Calculate instructor class threshold
+        instructor_threshold_df = calculate_instructor_threshold(conn, num_classes)
+        instructor_threshold_df.set_index('Subject', inplace=True)
+
+        # Iterate through each class table
+        for i in range(1, num_classes + 1):
+            table_name = f"BSCS_2_{i}_schedule"
+            
+            # Read schedule data into a DataFrame
+            schedule_df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
+            
+            # Track which instructors have already been incremented in this table
+            incremented_instructors = set()
+            
+            # Iterate over each row in the schedule table
+            for index, row in schedule_df.iterrows():
+                subject = row['Subjects']
+                
+                # Get the threshold for the subject
+                # if subject in instructor_threshold_df.index:
+                #     threshold = instructor_threshold_df.loc[subject, 'Instructor_Class_Threshold']
+                #     print(threshold)
+                # else:
+                #     print('yep')
+
+                threshold = instructor_threshold_df.loc[subject, 'Instructor_Class_Threshold']
+                print(threshold)
+
+                threshold = 2
+
+                # SQL query to find available instructors for the subject
+                query = """
+                    SELECT instructor_subject.Instructor, instructor_subject.No_of_classes
+                    FROM instructor_subject 
+                    JOIN instructor ON instructor.Full_name = instructor_subject.Instructor
+                    JOIN subjects ON subjects.Subject = instructor_subject.Subject
+                    WHERE instructor_subject.Subject = ?
+                    AND instructor_subject.No_of_classes < ?
+                    AND instructor.Free_time > subjects.Required_weekly_hours
+                    LIMIT 1
+                """
+                c.execute(query, (subject, threshold))
+
+                instructor_row = c.fetchone()
+                
+                if instructor_row:
+                    instructor = instructor_row[0]
+                    
+                    # Check if the instructor has already been incremented for this table
+                    if instructor not in incremented_instructors:
+                        # Increment No_of_classes for the selected instructor
+                        c.execute("UPDATE instructor_subject SET No_of_classes = No_of_classes + 1 WHERE Instructor = ? AND Subject = ?", (instructor, subject))
+                        
+                        # Add the instructor to the set of incremented instructors for this table
+                        incremented_instructors.add(instructor)
+                    
+                    # Update the schedule table with the selected instructor
+                    c.execute(f"UPDATE {table_name} SET Instructor = ? WHERE rowid = ?", (instructor, row.name + 1))
+                        
+            conn.commit()
+            print(f"Instructors assigned for {table_name}.")
+
+        print("Instructors assigned successfully.")
+    
+    except Exception as e:
+        print(f"Error assigning instructors: {e}")

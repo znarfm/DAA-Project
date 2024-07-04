@@ -9,7 +9,7 @@ conn = sqlite3.connect(db_file)
 # Create a cursor object using the cursor() method
 cursor = conn.cursor()
 
-# Create table with the updated schema
+# Create table with the updated schema including columns for each day of the week
 cursor.execute('''CREATE TABLE IF NOT EXISTS instructor (
                     id INTEGER PRIMARY KEY,
                     Last_name TEXT,
@@ -17,14 +17,27 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS instructor (
                     Middle_initial TEXT,
                     Full_name TEXT,
                     Work_hours_per_week INTEGER DEFAULT 40,
-                    Free_time INTEGER DEFAULT 40
+                    Free_time INTEGER DEFAULT 40,
+                    Monday_classes INTEGER DEFAULT 0,
+                    Tuesday_classes INTEGER DEFAULT 0,
+                    Wednesday_classes INTEGER DEFAULT 0,
+                    Thursday_classes INTEGER DEFAULT 0,
+                    Friday_classes INTEGER DEFAULT 0,
+                    Saturday_classes INTEGER DEFAULT 0
                 )''')
 
-# Transfer data from the old table to the new table
-cursor.execute('''INSERT INTO instructor (id, Last_name, First_name, Middle_initial, Full_name, Work_hours_per_week, Free_time)
+# Transfer data from the old table to the new table, including columns for each day
+cursor.execute('''INSERT INTO instructor (id, Last_name, First_name, Middle_initial, Full_name, Work_hours_per_week, Free_time,
+                                           Monday_classes, Tuesday_classes, Wednesday_classes, Thursday_classes, Friday_classes, Saturday_classes)
                   SELECT id, Last_name, First_name, Middle_initial, Full_name, 
-                         CASE WHEN Work_hours_per_week IS NULL THEN 40 ELSE Work_hours_per_week END,
-                         Free_time
+                         COALESCE(Work_hours_per_week, 40) AS Work_hours_per_week,
+                         Free_time,
+                         Monday_classes,
+                         Tuesday_classes,
+                         Wednesday_classes,
+                         Thursday_classes,
+                         Friday_classes,
+                         Saturday_classes
                   FROM instructor''')
 
 # Commit changes and close the connection

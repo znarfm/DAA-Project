@@ -20,17 +20,6 @@ create_table_query = '''CREATE TABLE IF NOT EXISTS instructor_subject (
 # Execute the query
 cursor.execute(create_table_query)
 
-# Sample data to insert into the table
-data = [
-    ("Santos, Dustin O.", "CS-101: Operating Systems", "BSCS 2-1"),
-    ("Santos, Dustin O.", "CS-101: Operating Systems", "BSCS 2-2")
-]
-
-# Insert data into the table
-insert_query = '''INSERT INTO instructor_subject (Instructor, Subject, Class) VALUES (?, ?, ?)'''
-
-cursor.executemany(insert_query, data)
-
 # Commit the transaction
 conn.commit()
 

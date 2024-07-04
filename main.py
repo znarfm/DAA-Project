@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
+import math
 
 st.set_page_config(
     page_title="Synchllabus",
@@ -107,20 +108,34 @@ def process_schedule_table(conn, num_classes):
             "Subjects TEXT",
             "Instructor TEXT",
             "Scheduled_Day TEXT",
-            "Meeting_Time TEXT",
+            "Meeting_Start TEXT",
+            "Meeting_End TEXT",
             "Number_of_Hours INTEGER",
             "Meeting_Type TEXT"
         ]
 
         # Placeholder data (can be replaced with actual data)
         data = {
-            'Class_Name': [f"BSCS 2-{i}"] * 10,
-            'Subjects': ['', '', '', '', '', '', '', '', '', ''],
-            'Instructor': ['', '', '', '', '', '', '', '', '', ''],
-            'Scheduled_Day': ['', '', '', '', '', '', '', '', '', ''],
-            'Meeting_Time': ['', '', '', '', '', '', '', '', '', ''],
-            'Number_of_Hours': [3, 2, 3, 2, 3, 2, 2, 3, 3, 3],
-            'Meeting_Type': ['F2F', 'Online', 'F2F', 'Online', 'F2F', 'Online', 'F2F', 'Online', 'Online', 'Online']
+            'Class_Name': [f"BSCS 2-{i}"] * 11,
+            'Subjects': [
+                "COMP 007: Operating Systems",
+                "COMP 007: Operating Systems",
+                "COMP 008: Data Communications and Networking",
+                "COMP 008: Data Communications and Networking",
+                "COMP 010: Information Management",
+                "COMP 010: Information Management",
+                "PATHFIT 4: Physical Activity Towards Health and Fitness 4",
+                "COMP 011: Technical Documentation and Presentation Skills in ICT",
+                "COSC 203: Design and Analysis of Algorithms",
+                "ELEC CS-FE2: BSCS Free Elective 2",
+                "GEED 010: People and the Earth's Ecosystem"
+            ],
+            'Instructor': ['', '', '', '', '', '', '', '', '', '', ''],
+            'Scheduled_Day': ['', '', '', '', '', '', '', '', '', '', ''],
+            'Meeting_Start': ['', '', '', '', '', '', '', '', '', '', ''],
+            'Meeting_End': ['', '', '', '', '', '', '', '', '', '', ''],
+            'Number_of_Hours': [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+            'Meeting_Type': ['F2F', 'Online', 'F2F', 'Online', 'F2F', 'Online', 'F2F', 'Online', 'Online', 'Online', 'Online']
         }
         schedule_df = pd.DataFrame(data)
 
@@ -133,6 +148,58 @@ def process_schedule_table(conn, num_classes):
         # Populate table with data
         populate_table(conn, table_name, schedule_df)
 
+# Function to reset No_of_classes in instructor_subject table
+def reset_no_of_classes(conn):
+    try:
+        c = conn.cursor()
+        c.execute("UPDATE instructor_subject SET No_of_classes = 0;")
+        conn.commit()
+        st.success("No_of_classes reset successfully.")
+    except sqlite3.Error as e:
+        st.error(f"Error resetting No_of_classes: {e}")
+
+# Function to calculate instructor class threshold
+def calculate_instructor_threshold(conn, num_classes):
+    try:
+        c = conn.cursor()
+
+        # SQL query to calculate number of instructors per subject
+        query = """
+            SELECT Subject,
+                COUNT(DISTINCT Instructor) AS Number_of_Instructors,
+                CEIL(:num_classes * 1.0 / COUNT(DISTINCT Instructor)) AS Instructor_Class_Threshold
+            FROM instructor_subject
+            GROUP BY Subject
+        """
+
+        # Execute the query with parameter substitution
+        instructor_class_threshold = pd.read_sql_query(query, conn, params={'num_classes': num_classes})
+
+        # Convert Instructor_Class_Threshold to integer
+        instructor_class_threshold['Instructor_Class_Threshold'] = instructor_class_threshold['Instructor_Class_Threshold'].astype(int)
+
+        return instructor_class_threshold
+
+    except sqlite3.Error as e:
+        st.error(f"Error calculating instructor class threshold: {e}")
+        return None
+
+# Function to assign instructors to classes based on subject match and free time availability
+def assign_instructors(conn, num_classes):
+    try:
+        c = conn.cursor()
+
+        # Reset No_of_classes to 0 before assigning instructors
+        reset_no_of_classes(conn)
+
+        # Calculate instructor class threshold
+        instructor_threshold_df = calculate_instructor_threshold(conn, num_classes)
+        instructor_threshold_df.set_index('Subject', inplace=True)
+        
+    except Exception as e:
+        print(f"Error assigning instructors: {e}")
+
+
 # Submit button
 if st.button("Start Scheduling Algorithm"):
     # Delete other BSCS tables not selected in num_classes
@@ -142,11 +209,15 @@ if st.button("Start Scheduling Algorithm"):
     process_schedule_table(conn, num_classes)
 
     # Display Empty Schedule
-    display_schedules(conn, num_classes)
+    # display_schedules(conn, num_classes)
 
     # Algorithm Proper
+    # Assign instructors to all classes
+    assign_instructors(conn, num_classes)
+
 
     # Display Final Schedules
+    display_schedules(conn, num_classes)
 
     st.success("Algorithm Finished")
 

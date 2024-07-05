@@ -27,13 +27,17 @@ with col2:
     st.write("# 2nd Year")
     st.write("## 2nd Semester")
     st.write("### BS Computer Science")
-    # Editable input for number of classes with constraints
-    num_classes = st.number_input("Number of Classes (Sections):", min_value=1, max_value=6, step=1)
-    # st.write(f"Selected number of classes: {num_classes}")
-
-    st.subheader("Section Names")
+    num_classes  = 6
     for i in range(1, num_classes + 1):
         st.write(f"BSCS 2-{i}")
+
+    # Editable input for number of classes with constraints
+    # num_classes = st.number_input("Number of Classes (Sections):", min_value=1, max_value=6, step=1)
+    # st.write(f"Selected number of classes: {num_classes}")
+
+    # st.subheader("Section Names")
+    # for i in range(1, num_classes + 1):
+        # st.write(f"BSCS 2-{i}")
 
     # st.write("### BS Information Technology")
 
@@ -205,6 +209,16 @@ def can_place_course(schedule, course, row, col):
                     return "Skip"  # Indicate to skip this cell if both Prof 1 and Prof 2 are found
         return "Prof 2" if prof1_found else "Prof 1"  # Assign Prof 2 if Prof 1 is found, otherwise Prof 1
 
+# Display the schedule DataFrame in sections
+def display_schedule_in_sections(schedule_df):
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    section_ranges = [(0, 6), (6, 12), (12, 18), (18, 24), (24, 30), (30, 36)]
+    for i, (start, end) in enumerate(section_ranges):
+        st.write(f"BSCS 2-{i + 1}")
+        section_df = schedule_df.iloc[start:end].copy()
+        section_df.index = days
+        st.dataframe(section_df)
+
 
 # Submit button
 if st.button("Start Scheduling Algorithm"):
@@ -214,21 +228,19 @@ if st.button("Start Scheduling Algorithm"):
     schedule_df = create_empty_schedule()
 
     # Display Empty Schedule
-    st.write("Empty Schedule")
+    # st.write("Empty Schedule")
     # st.dataframe(schedule_df)
-    # fill_schedule_with_numbers(schedule_df)
-    st.dataframe(schedule_df)
 
     # Algorithm Proper: Place courses using backtracking
     if place_courses_for_sections(schedule_df, courses):
-        st.write("Final Schedules")
-        st.dataframe(schedule_df)
+        # st.write("Final Schedules")
+        # st.dataframe(schedule_df)
         st.success("Algorithm Finished")
     else:
         st.error("Unable to place all courses in the schedule")
 
-    # Display Final Schedules
 
+    display_schedule_in_sections(schedule_df)
     st.success("Algorithm Finished")
 
 

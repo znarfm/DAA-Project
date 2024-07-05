@@ -57,19 +57,175 @@ def show_subject_data():
     st.title('Meeting Type and Subject Data')
     st.dataframe(df)
 
+courses = [
+    ["F2F", "COMP 007: Operating Systems"],
+    ["F2F", "COMP 008: Data Communications and Networking"],
+    ["F2F", "COMP 010: Information Management"],
+    ["Online", "COMP 011: Technical Documentation and Presentation Skills in ICT"],
+    ["Online", "COSC 203: Design and Analysis of Algorithms"],
+    ["Online", "ELEC CS-FE2: BSCS Free Elective 2"],
+    ["Online", "GEED 010: People and the Earth's Ecosystem"],
+    ["F2F", "PATHFIT 4: Physical Activity Towards Health and Fitness 4"],
+    ["Online", "COMP 007: Operating Systems"],
+    ["Online", "COMP 008: Data Communications and Networking"],
+    ["Online", "COMP 010: Information Management"]
+]
+
+# Sort courses to place F2F courses before Online courses
+courses.sort(key=lambda x: x[0])
+
+# Function to create and display the initial empty schedule
+def create_empty_schedule():
+    columns = ["9:00 AM - 12:00 PM", "1:00 PM - 4:00 PM", "4:00 PM - 7:00 PM"]
+    empty_data = [["" for _ in columns] for _ in range(36)]
+    schedule_df = pd.DataFrame(empty_data, columns=columns)
+    return schedule_df
+
+# def place_courses(schedule, courses, course_index=0, start_row=0):
+#     # print(start_row)
+#     if course_index == len(courses):
+#         return True
+
+#     for row in schedule.index[start_row:]:
+#         for col in schedule.columns:
+#             if schedule.at[row, col] == "":
+#                 prof = can_place_course(schedule, courses[course_index], row, col)
+#                 if prof:
+#                     schedule.at[row, col] = f"{courses[course_index][0]} - {courses[course_index][1]} - {prof}"
+#                     if place_courses(schedule, courses, course_index + 1, start_row):
+#                         return True
+#                     schedule.at[row, col] = ""  # Backtrack
+#     return False
+
+def place_courses(schedule, courses, course_index=0, start_row=0):
+    if course_index == len(courses):
+        return True
+
+    for row in schedule.index[start_row:]:
+        for col in schedule.columns:
+            if schedule.at[row, col] == "":
+                prof = can_place_course(schedule, courses[course_index], row, col)
+                if prof == "Skip":
+                    continue  # Skip this cell and move to the next
+                elif prof:
+                    schedule.at[row, col] = f"{courses[course_index][0]} - {courses[course_index][1]} - {prof}"
+                    if place_courses(schedule, courses, course_index + 1, start_row):
+                        return True
+                    schedule.at[row, col] = ""  # Backtrack
+    return False
+
+def place_courses_for_sections(schedule, courses):
+    section_start_rows = [0, 6, 12, 18, 24, 30]
+    for start_row in section_start_rows:
+        if not place_courses(schedule, courses, start_row=start_row):
+            print(f"Could not place all courses starting from row {start_row}")
+            return False
+    return True
+
+
+# def can_place_course(schedule, course, row, col):
+#     mode, subject = course
+    
+#     if mode == "F2F" or mode == "Online":
+#         # Check all multiples of -6 in the same column
+#         for r in range(row, -1, -6):
+#             if schedule.loc[r, col] != "" and (mode in schedule.loc[r, col]):
+#                 return False
+#         return True
+    
+#     return True
+
+# def can_place_course(schedule, course, row, col):
+#     mode, subject = course
+#     # Check if the slot is empty
+#     if schedule.at[row, col] != "":
+#         return False
+
+#     if mode == "F2F":
+#         # Check all multiples of -6 in the same column
+#         prof1_found = prof2_found = False
+#         for r in range(row, -1, -6):
+#             if schedule.loc[r, col] != "" and subject in schedule.loc[r, col]:
+#                 if "Prof 1" in schedule.loc[r, col]:
+#                     prof1_found = True
+#                 elif "Prof 2" in schedule.loc[r, col]:
+#                     prof2_found = True
+#                 if prof1_found and prof2_found:
+#                     return "No Prof"  # If both Prof 1 and Prof 2 are found, return "No Prof"
+#         return "Prof 2" if prof1_found else "Prof 1"  # Assign Prof 2 if Prof 1 is found, otherwise Prof 1
+#     else:  # Online course
+#         # Check if there's an F2F course in the same row (day)
+#         for c in schedule.columns:
+#             if "F2F" in schedule.loc[row, c]:
+#                 return False
+#         # Check all multiples of -6 in the same column
+#         prof1_found = prof2_found = False
+#         for r in range(row, -1, -6):
+#             if schedule.loc[r, col] != "" and subject in schedule.loc[r, col]:
+#                 if "Prof 1" in schedule.loc[r, col]:
+#                     prof1_found = True
+#                 elif "Prof 2" in schedule.loc[r, col]:
+#                     prof2_found = True
+#                 if prof1_found and prof2_found:
+#                     return "No Prof"  # If both Prof 1 and Prof 2 are found, return "No Prof"
+#         return "Prof 2" if prof1_found else "Prof 1"  # Assign Prof 2 if Prof 1 is found, otherwise Prof 1
+
+def can_place_course(schedule, course, row, col):
+    mode, subject = course
+    # Check if the slot is empty
+    if schedule.at[row, col] != "":
+        return False
+
+    if mode == "F2F":
+        # Check all multiples of -6 in the same column
+        prof1_found = prof2_found = False
+        for r in range(row, -1, -6):
+            if schedule.loc[r, col] != "" and subject in schedule.loc[r, col]:
+                if "Prof 1" in schedule.loc[r, col]:
+                    prof1_found = True
+                elif "Prof 2" in schedule.loc[r, col]:
+                    prof2_found = True
+                if prof1_found and prof2_found:
+                    return "Skip"  # Indicate to skip this cell if both Prof 1 and Prof 2 are found
+        return "Prof 2" if prof1_found else "Prof 1"  # Assign Prof 2 if Prof 1 is found, otherwise Prof 1
+    else:  # Online course
+        # Check if there's an F2F course in the same row (day)
+        for c in schedule.columns:
+            if "F2F" in schedule.loc[row, c]:
+                return False
+        # Check all multiples of -6 in the same column
+        prof1_found = prof2_found = False
+        for r in range(row, -1, -6):
+            if schedule.loc[r, col] != "" and subject in schedule.loc[r, col]:
+                if "Prof 1" in schedule.loc[r, col]:
+                    prof1_found = True
+                elif "Prof 2" in schedule.loc[r, col]:
+                    prof2_found = True
+                if prof1_found and prof2_found:
+                    return "Skip"  # Indicate to skip this cell if both Prof 1 and Prof 2 are found
+        return "Prof 2" if prof1_found else "Prof 1"  # Assign Prof 2 if Prof 1 is found, otherwise Prof 1
+
 
 # Submit button
 if st.button("Start Scheduling Algorithm"):
-    show_subject_data();
+    # show_subject_data();
     
-    # Clear Table
-    
-    # Function to create tables
+    # Clear Table: This can be handled by creating a new empty DataFrame
+    schedule_df = create_empty_schedule()
 
     # Display Empty Schedule
+    st.write("Empty Schedule")
+    # st.dataframe(schedule_df)
+    # fill_schedule_with_numbers(schedule_df)
+    st.dataframe(schedule_df)
 
-    # Algorithm Proper
-
+    # Algorithm Proper: Place courses using backtracking
+    if place_courses_for_sections(schedule_df, courses):
+        st.write("Final Schedules")
+        st.dataframe(schedule_df)
+        st.success("Algorithm Finished")
+    else:
+        st.error("Unable to place all courses in the schedule")
 
     # Display Final Schedules
 

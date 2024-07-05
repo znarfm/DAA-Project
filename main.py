@@ -6,7 +6,7 @@ st.set_page_config(
     page_title="Synchllabus",
     page_icon="🗓️",
     layout="wide",
-    # initial_sidebar_state="collapsed",
+    initial_sidebar_state="collapsed",
 )
 
 st.sidebar.page_link(page="pages/add.py", label="Add instructors", icon="➕")
@@ -157,7 +157,7 @@ def display_schedule_in_sections(schedule_df, num_sections):
         st.write(f"BSCS 2-{i + 1}")
         section_df = schedule_df.iloc[start:end].copy()
         section_df.index = days
-        st.write(section_df)
+        st.dataframe(section_df, use_container_width=True)
 
 if __name__ == '__main__':
     main()

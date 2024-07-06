@@ -12,6 +12,8 @@ st.set_page_config(
 st.sidebar.page_link(page="pages/manage.py", label="Manage instructors", icon="✏️")
 st.sidebar.page_link(page="pages/instructors.py", label="List of Instructors", icon="👨‍🏫")
 st.sidebar.page_link(page="pages/subjects.py", label="List of Subjects", icon="📚")
+st.sidebar.divider()
+st.sidebar.page_link(page="pages/about.py", label="About", icon="🧑‍💻")
 
 conn = sqlite3.connect("synchllabus_database.db")
 

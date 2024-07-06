@@ -29,7 +29,7 @@ def main():
     with c1:
         st.header("Add a new instructor")
         with st.form(key='new_instructor_form'):
-            st.info("All field marked with * are required.")
+            st.info("All fields marked with * are required.")
             # Form fields
             col1, col2, col3 = st.columns([1, 1, 1])
             with col1:
@@ -109,12 +109,12 @@ def main():
                 st.success("Instructor *{sel_instructor}* deleted successfully!")
 
         st.divider()
-        st.header("Deallocate a subject from an existing instructor")
+        st.header("Deallocate subject/s from an existing instructor")
         with st.container(border=True):
             sel_instructor = st.selectbox("Select Instructor", instructor_data["Full_name"], index=None)
             sel_instructor_subjects = pd.read_sql_query(f"SELECT Subject FROM instructor_subject WHERE Instructor = '{sel_instructor}'", conn)
-            sel_subject = st.multiselect("Select Subject", subjects, default=sel_instructor_subjects["Subject"].tolist())
-            submitted = st.button("Deallocate Subject")
+            sel_subject = st.multiselect("Select Subject/s", subjects, default=sel_instructor_subjects["Subject"].tolist())
+            submitted = st.button("Deallocate Subject/s")
 
             if submitted:
                 cursor = conn.cursor()

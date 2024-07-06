@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-st.sidebar.page_link(page="pages/add.py", label="Add instructors", icon="➕")
+st.sidebar.page_link(page="pages/manage.py", label="Manage instructors", icon="✏️")
 st.sidebar.page_link(page="pages/instructors.py", label="List of Instructors", icon="👨‍🏫")
 st.sidebar.page_link(page="pages/subjects.py", label="List of Subjects", icon="📚")
 

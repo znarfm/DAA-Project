@@ -106,7 +106,7 @@ def main():
                 cursor = conn.cursor()
                 cursor.execute('''DELETE FROM instructor WHERE Full_name = ?''', (sel_instructor,))
                 conn.commit()
-                st.success("Instructor *{sel_instructor}* deleted successfully!")
+                st.success(f"Instructor *{sel_instructor}* deleted successfully!")
 
         st.divider()
         st.header("Deallocate subject/s from an existing instructor")

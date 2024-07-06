@@ -71,13 +71,13 @@ def main():
                         st.success("Instructor details successfully submitted!")
 
         st.divider()
-        st.header("Assign Subjects to an existing instructor")
+        st.header("Assign Subject/s to an existing instructor")
         with st.form("assign_subjects"):
 
             sel_instructor = st.selectbox("Select Instructor", instructor_data["Full_name"], index=None)
-            sel_subjects = st.multiselect("Select Subjects", subjects)
+            sel_subjects = st.multiselect("Select Subject/s", subjects)
 
-            submitted = st.form_submit_button("Assign Subjects")
+            submitted = st.form_submit_button("Assign Subject/s")
 
             if submitted and sel_subjects and sel_instructor:
                 cursor = conn.cursor()
@@ -105,6 +105,7 @@ def main():
             if submitted and sel_instructor:
                 cursor = conn.cursor()
                 cursor.execute('''DELETE FROM instructor WHERE Full_name = ?''', (sel_instructor,))
+                cursor.execute('''DELETE FROM instructor_subject WHERE Instructor = ?''', (sel_instructor,))
                 conn.commit()
                 st.success(f"Instructor *{sel_instructor}* deleted successfully!")
 

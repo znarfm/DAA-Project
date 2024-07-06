@@ -79,7 +79,7 @@ def main():
 
             submitted = st.form_submit_button("Assign Subjects")
 
-            if submitted and sel_subjects:
+            if submitted and sel_subjects and sel_instructor:
                 cursor = conn.cursor()
                 for subject in sel_subjects:
                     # Check if the subject is already assigned to the instructor
@@ -102,7 +102,7 @@ def main():
             sel_instructor = st.selectbox("Select Instructor", instructor_data["Full_name"], index=None)
             submitted = st.form_submit_button("Delete Instructor")
 
-            if submitted:
+            if submitted and sel_instructor:
                 cursor = conn.cursor()
                 cursor.execute('''DELETE FROM instructor WHERE Full_name = ?''', (sel_instructor,))
                 conn.commit()
@@ -116,7 +116,7 @@ def main():
             sel_subject = st.multiselect("Select Subject/s", subjects, default=sel_instructor_subjects["Subject"].tolist())
             submitted = st.button("Deallocate Subject/s")
 
-            if submitted:
+            if submitted and sel_subject and sel_instructor:
                 cursor = conn.cursor()
                 for subject in sel_subject:
                     cursor.execute('''DELETE FROM instructor_subject 

@@ -91,8 +91,8 @@ def main():
                     if count == 0:
                         cursor.execute('''INSERT INTO instructor_subject (Instructor, Subject)
                                         VALUES (?, ?)''', (sel_instructor, subject))
-                        st.success("Subjects assigned successfully!")
                         conn.commit()
+                        st.success(f"*{subject}* assigned successfully!")
                     else:
                         st.warning(f"*{subject}* already assigned to the selected instructor.")
 

@@ -6,9 +6,9 @@ This project aims to develop a class scheduling system for PUP to address the re
 
 ## Tech Stack
 
-- Programming Language: Python
-- Framework: Streamlit
-- Database: SQLite
+**Programming Language:** Python
+**Framework:** Streamlit
+**Database:** SQLite
 
 ## Installation and Usage
 
@@ -20,11 +20,7 @@ This project aims to develop a class scheduling system for PUP to address the re
 
 ## Members
 
-- Marzan, Kristina Amor A.
-- Joaquin, Daniela D.
-- Francisco, Meinard Adrian P.
-- Siapengco, Yoj M.
-
-## Links
-
-[Project Proposal Paper](https://drive.google.com/file/d/1JyRKbn4lj9F39G_NQK-MvQgmylkX-DWi/view)
+- [Marzan, Kristina Amor A.](https://github.com/Kris-Amor)
+- [Joaquin, Daniela D.](https://github.com/Thaniela)
+- [Francisco, Meinard Adrian P.](https://github.com/znarfm)
+- [Siapengco, Yoj M.](https://github.com/Pengskii09)

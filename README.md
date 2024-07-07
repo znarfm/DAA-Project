@@ -6,9 +6,9 @@ This project aims to develop a class scheduling system for PUP to address the re
 
 ## Tech Stack
 
-**Programming Language:** Python
-**Framework:** Streamlit
-**Database:** SQLite
+- **Programming Language:** Python
+- **Framework:** Streamlit
+- **Database:** SQLite
 
 ## Installation and Usage
 
